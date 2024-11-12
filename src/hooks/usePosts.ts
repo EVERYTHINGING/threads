@@ -1,28 +1,35 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import type { Post } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { Buffer } from 'buffer';
 
-export function usePosts() {
+export function usePosts(limit = 5, offset = 0) {
   const queryClient = useQueryClient();
 
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['posts'],
-    queryFn: async () => {
-      const { data, error } = await supabase
+    queryFn: async ({ pageParam = 0 }) => {
+      const { data, error, count } = await supabase
         .from('posts')
         .select(`
           *,
           user:users(*),
           images:post_images(*)
-        `)
-        .order('created_at', { ascending: false });
+        `, { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(pageParam, pageParam + limit - 1);
 
       if (error) throw error;
-      return data as Post[];
+      return {
+        posts: data as Post[],
+        nextPage: data.length === limit ? pageParam + limit : undefined,
+        totalCount: count || 0
+      };
     },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0
   });
 
   const uploadImage = async (uri: string): Promise<string> => {
@@ -152,8 +159,11 @@ export function usePosts() {
   };
 
   return {
-    posts,
+    posts: posts?.pages.flatMap(page => page.posts) ?? [],
     isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     createPost,
     pickImages,
   };
