@@ -35,7 +35,7 @@ export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
     <FlatList
       data={posts}
       renderItem={({ item }) => (
-        <PostCard post={item} onPress={() => navigation.navigate('PostDetail', { postId: item.id })} />
+        <PostCard post={item} />
       )}
       keyExtractor={item => item.id.toString()}
       contentContainerStyle={styles.container}

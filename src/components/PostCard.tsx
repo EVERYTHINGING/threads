@@ -1,24 +1,26 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import type { Post } from '../types';
+import { ImageGallery } from './ImageGallery';
 
 interface PostCardProps {
   post: Post;
-  onPress: () => void;
 }
 
-export function PostCard({ post, onPress }: PostCardProps) {
+export function PostCard({ post }: PostCardProps) {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <View style={styles.card}>
       <Text style={styles.title}>{post.title}</Text>
       <Text style={styles.meta}>
         by {post.user?.username} • {formatDistanceToNow(new Date(post.created_at))} ago
       </Text>
-      <Text numberOfLines={2} style={styles.content}>
-        {post.content}
-      </Text>
-    </TouchableOpacity>
+      <Text style={styles.content}>{post.content}</Text>
+      
+      {post.images && post.images.length > 0 && (
+        <ImageGallery images={post.images} />
+      )}
+    </View>
   );
 }
 
@@ -35,7 +37,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: 4,
   },
@@ -46,6 +48,6 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 16,
-    color: '#444',
+    marginBottom: 16,
   },
 }); 
