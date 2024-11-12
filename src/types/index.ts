@@ -41,6 +41,4 @@ export type RootStackParamList = {
   Profile: undefined;
 };
 
-export type RootStackScreenProps<T extends keyof RootStackParamList> = {
-  route: { params: RootStackParamList[T] };
-};
+export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;
