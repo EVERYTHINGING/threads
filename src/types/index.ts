@@ -38,6 +38,7 @@ export type RootStackParamList = {
   Home: undefined;
   CreatePost: undefined;
   Profile: undefined;
+  User: { userId: number };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;

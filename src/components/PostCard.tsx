@@ -5,6 +5,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { Post } from '../types';
 import { ImageGallery } from './ImageGallery';
 import { useComments } from '../hooks/useComments';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../types';
 
 interface PostCardProps {
   post: Post;
@@ -14,12 +17,20 @@ interface PostCardProps {
 export function PostCard({ post, onCommentPress }: PostCardProps) {
   const { comments } = useComments(post.id);
   const commentCount = comments?.length || 0;
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{post.title}</Text>
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('User', { userId: post.user_id  })}
+      >
+        <Text style={[styles.meta, styles.username]}>
+          {post.user?.username}
+        </Text>
+      </TouchableOpacity>
       <Text style={styles.meta}>
-        by {post.user?.username} • {formatDistanceToNow(new Date(post.created_at))} ago
+        • {formatDistanceToNow(new Date(post.created_at))} ago
       </Text>
       <Text style={styles.content}>{post.content}</Text>
       
@@ -77,5 +88,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: '#666',
     fontSize: 14,
+  },
+  username: {
+    color: '#007AFF',
   },
 }); 

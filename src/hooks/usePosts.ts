@@ -5,13 +5,19 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { Buffer } from 'buffer';
 
-export function usePosts(limit = 5, offset = 0) {
+interface UsePostsOptions {
+  userId?: number;
+  limit?: number;
+}
+
+export function usePosts(options: UsePostsOptions = {}) {
+  const { userId, limit = 5 } = options;
   const queryClient = useQueryClient();
 
   const { data: posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts'],
+    queryKey: ['posts', { userId }],
     queryFn: async ({ pageParam = 0 }) => {
-      const { data, error, count } = await supabase
+      let query = supabase
         .from('posts')
         .select(`
           *,
@@ -20,6 +26,13 @@ export function usePosts(limit = 5, offset = 0) {
         `, { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(pageParam, pageParam + limit - 1);
+
+      // Add user filter if userId is provided
+      if (userId) {
+        query = query.eq('user_id', userId);
+      }
+
+      const { data, error, count } = await query;
 
       if (error) throw error;
       return {

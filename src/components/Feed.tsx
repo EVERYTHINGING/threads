@@ -9,16 +9,17 @@ import type { Post } from '../types';
 
 interface FeedProps {
   navigation: any;
+  userId?: number;
 }
 
-export function Feed({ navigation }: FeedProps) {
+export function Feed({ navigation, userId }: FeedProps) {
   const { 
     posts, 
     isLoading, 
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage 
-  } = usePosts();
+  } = usePosts({ userId });
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);

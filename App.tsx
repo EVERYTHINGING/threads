@@ -11,6 +11,7 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { RootStackParamList } from './src/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { UserScreen } from './src/screens/UserScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
@@ -51,6 +52,13 @@ export default function App() {
               component={ProfileScreen}
               options={{
                 headerRight: undefined
+              }}
+            />
+            <Stack.Screen 
+              name="User" 
+              component={UserScreen}
+              options={{
+                title: 'User Profile'
               }}
             />
           </Stack.Navigator>
