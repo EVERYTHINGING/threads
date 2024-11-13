@@ -67,7 +67,6 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Add a comment..."
           value={newComment}
           onChangeText={setNewComment}
           multiline
@@ -129,8 +128,11 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 20,
     paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
     marginRight: 8,
     backgroundColor: '#f8f8f8',
+    lineHeight: 24,
   },
   button: {
     backgroundColor: '#007AFF',
