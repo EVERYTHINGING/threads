@@ -14,7 +14,7 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
   const { comments, isLoading, addComment } = useComments(postId);
   
   // variables
-  const snapPoints = useMemo(() => ['80%'], []);
+  const snapPoints = useMemo(() => ['90%'], []);
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;

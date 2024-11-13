@@ -62,24 +62,27 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         }}
         emptySpaceWidth={0}
         disableVerticalSwipe={true}
+        disableSwipeUp={true}
         style={styles.gallery}
         onIndexChange={setActiveIndex}
       />
-       <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-           {images.map((_, index) => (
-             <TouchableOpacity
-               key={index}
-               onPress={() => setActiveIndex(index)}
-               style={{
-                 width: 10,
-                 height: 10,
-                 borderRadius: 5,
-                 backgroundColor: index === activeIndex ? 'blue' : 'gray',
-                 margin: 5,
-               }}
-             />
-           ))}
-         </View>
+      {images.length > 1  && 
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          {images.map((_, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => setActiveIndex(index)}
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: index === activeIndex ? 'blue' : 'gray',
+                margin: 5,
+              }}
+            />
+          ))}
+        </View>
+      }
     </View>
   );
 }

@@ -36,7 +36,6 @@ export interface Comment {
 export type RootStackParamList = {
   Login: undefined;
   Home: undefined;
-  PostDetail: { postId: number };
   CreatePost: undefined;
   Profile: undefined;
 };
