@@ -3,7 +3,6 @@ import { StyleSheet, FlatList, View, ActivityIndicator, TouchableOpacity } from 
 import type { RootStackScreenProps } from '../types';
 import { usePosts } from '../hooks/usePosts';
 import { PostCard } from '../components/PostCard';
-import { useInfiniteQuery } from '@tanstack/react-query';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
