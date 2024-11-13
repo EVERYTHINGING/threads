@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import type { RootStackScreenProps } from '../types';
 import { usePosts } from '../hooks/usePosts';
 import { PostCard } from '../components/PostCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { CommentBottomSheet } from '../components/CommentBottomSheet';
 
 export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
   const { 
@@ -13,6 +15,22 @@ export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
     hasNextPage, 
     isFetchingNextPage 
   } = usePosts();
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [selectedPostId, setSelectedPostId] = React.useState<number | null>(null);
+  const [shouldExpand, setShouldExpand] = useState(false);
+
+  const handleCommentPress = (postId: number) => {
+    setSelectedPostId(postId);
+    setShouldExpand(true);
+  };
+
+  useEffect(() => {
+    if (shouldExpand && bottomSheetRef.current) {
+      bottomSheetRef.current.expand();
+      setShouldExpand(false);
+    }
+  }, [shouldExpand, selectedPostId]);
 
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
@@ -36,7 +54,10 @@ export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
       <FlatList
         data={posts}
         renderItem={({ item }) => (
-          <PostCard post={item} />
+          <PostCard 
+            post={item} 
+            onCommentPress={handleCommentPress}
+          />
         )}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
@@ -48,12 +69,18 @@ export function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
       />
+      
       <TouchableOpacity 
         style={styles.fab} 
         onPress={() => navigation.navigate('CreatePost')}
       >
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
+
+      <CommentBottomSheet
+        postId={selectedPostId || 0}
+        bottomSheetRef={bottomSheetRef}
+      />
     </View>
   );
 }

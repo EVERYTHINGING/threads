@@ -15,12 +15,6 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   const galleryRef = React.useRef<GalleryRef>(null);
   if (!images?.length) return null;
 
-  React.useEffect(() => {
-    if (galleryRef.current) {
-      galleryRef.current.setIndex(activeIndex, true);
-    }
-  }, [activeIndex]);
-
   const formattedImages = images.map(image => image.url);
 
   return (

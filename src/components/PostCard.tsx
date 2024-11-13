@@ -1,23 +1,20 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { CommentBottomSheet } from './CommentBottomSheet';
-import { ImageGallery } from './ImageGallery';
 import type { Post } from '../types';
+import { ImageGallery } from './ImageGallery';
+import { useComments } from '../hooks/useComments';
 
 interface PostCardProps {
   post: Post;
+  onCommentPress: (postId: number) => void;
 }
 
-export function PostCard({ post }: PostCardProps) {
-  const bottomSheetRef = useRef<BottomSheet>(null);
-
-  const handleCommentPress = () => {
-    bottomSheetRef.current?.expand();
-  };
-
+export function PostCard({ post, onCommentPress }: PostCardProps) {
+  const { comments } = useComments(post.id);
+  const commentCount = comments?.length || 0;
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{post.title}</Text>
@@ -32,16 +29,13 @@ export function PostCard({ post }: PostCardProps) {
 
       <TouchableOpacity 
         style={styles.commentButton}
-        onPress={handleCommentPress}
+        onPress={() => onCommentPress(post.id)}
       >
         <Icon name="comment" size={20} color="#666" />
-        <Text style={styles.commentButtonText}>Comments</Text>
+        <Text style={styles.commentButtonText}>
+          {commentCount} Comments
+        </Text>
       </TouchableOpacity>
-
-      <CommentBottomSheet
-        postId={post.id}
-        bottomSheetRef={bottomSheetRef}
-      />
     </View>
   );
 }

@@ -14,7 +14,7 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
   const { comments, isLoading, addComment } = useComments(postId);
   
   // variables
-  const snapPoints = useMemo(() => ['70%'], []);
+  const snapPoints = useMemo(() => ['80%'], []);
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
@@ -27,15 +27,26 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
     }
   };
 
+  // Add this callback to clear input when sheet closes
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) {
+      setNewComment('');
+    }
+  }, []);
+
   return (
     <BottomSheet
       ref={bottomSheetRef}
       index={-1}
       snapPoints={snapPoints}
       enablePanDownToClose
+      onChange={handleSheetChanges}
+      backgroundStyle={styles.bottomSheetBackground}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Comments</Text>
+        <Text style={styles.title}>
+          Comments ({comments?.length || 0})
+        </Text>
       </View>
 
       <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
@@ -132,5 +143,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: '600',
+  },
+  bottomSheetBackground: {
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 }); 
