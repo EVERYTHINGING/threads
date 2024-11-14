@@ -75,7 +75,7 @@ export function usePosts(options: UsePostsOptions = {}) {
         .upload(filename, buffer, {
           contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
         });
 
       if (error) {
@@ -86,7 +86,13 @@ export function usePosts(options: UsePostsOptions = {}) {
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('post-images')
-        .getPublicUrl(data.path);
+        .getPublicUrl(data.path, {
+          transform: {
+            width: 400,
+            height: 400,
+            resize: 'contain', // 'cover' | 'fill'
+          },
+        });
 
       return publicUrl;
     } catch (error) {
