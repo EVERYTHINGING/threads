@@ -37,6 +37,24 @@
     },
     "updates": {
       "url": "https://u.expo.dev/b2b01200-5b92-4cdb-ad8b-17af8967c026"
-    }
+    },
+    "fonts": [
+      {
+        "asset": "./assets/fonts/Quicksand-Regular.ttf",
+        "family": "Quicksand-Regular"
+      },
+      {
+        "asset": "./assets/fonts/Quicksand-Medium.ttf",
+        "family": "Quicksand-Medium"
+      },
+      {
+        "asset": "./assets/fonts/Quicksand-SemiBold.ttf",
+        "family": "Quicksand-SemiBold"
+      },
+      {
+        "asset": "./assets/fonts/Quicksand-Bold.ttf",
+        "family": "Quicksand-Bold"
+      }
+    ]
   }
 }

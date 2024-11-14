@@ -93,6 +93,8 @@ export function Feed({ navigation, userId }: FeedProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    rowGap: 0,
+    columnGap: 0,
   },
   loadingContainer: {
     flex: 1,

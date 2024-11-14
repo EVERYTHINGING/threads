@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { Post } from '../types';
 import { ImageGallery } from './ImageGallery';
 import { useComments } from '../hooks/useComments';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types';
+import { typography } from '../theme/typography';
 
 interface PostCardProps {
   post: Post;
@@ -21,16 +21,18 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{post.title}</Text>
-      <TouchableOpacity 
-        onPress={() => navigation.navigate('User', { userId: post.user_id  })}
-      >
-        <Text style={[styles.meta, styles.username]}>
-          {post.user?.username}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <View style={styles.userAvatar} />
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('User', { userId: post.user_id })}
+        >
+          <Text style={styles.username}>
+            {post.user?.username}
+          </Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.meta}>
-        • {formatDistanceToNow(new Date(post.created_at))} ago
+        {formatDistanceToNow(new Date(post.created_at))} ago
       </Text>
       <Text style={styles.content}>{post.content}</Text>
       
@@ -42,7 +44,7 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
         style={styles.commentButton}
         onPress={() => onCommentPress(post.id)}
       >
-        <Icon name="comment" size={20} color="#666" />
+        <Text style={styles.commentEmoji}>💅</Text>
         <Text style={styles.commentButtonText}>
           {commentCount} Comments
         </Text>
@@ -54,42 +56,63 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#dbdbdb',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  userAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+    backgroundColor: '#efefef',
+  },
+  username: {
+    fontFamily: typography.semiBold,
+    fontSize: 24,
+    color: '#262626',
+    letterSpacing: 1,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  meta: {
+    fontFamily: typography.medium,
     fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
+    marginBottom: 4,
+    paddingHorizontal: 12,
   },
   content: {
-    fontSize: 16,
-    marginBottom: 16,
+    fontFamily: typography.regular,
+    fontSize: 18,
+    marginBottom: 20,
+    paddingHorizontal: 12,
+  },
+  meta: {
+    fontFamily: typography.regular,
+    fontSize: 12,
+    color: '#8e8e8e',
+    paddingHorizontal: 12,
+    marginBottom: 8,
   },
   commentButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 12,
+    padding: 12,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: '#efefef',
   },
   commentButtonText: {
+    fontFamily: typography.medium,
     marginLeft: 8,
-    color: '#666',
-    fontSize: 14,
+    color: '#8e8e8e',
+    fontSize: 15,
   },
-  username: {
-    color: '#007AFF',
+  commentEmoji: {
+    fontSize: 16,
+    marginRight: 8,
   },
 }); 

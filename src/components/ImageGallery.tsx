@@ -67,7 +67,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         onIndexChange={setActiveIndex}
       />
       {images.length > 1  && 
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 12, marginBottom: 12 }}>
           {images.map((_, index) => (
             <TouchableOpacity
               key={index}
