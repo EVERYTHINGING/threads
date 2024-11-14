@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContainer: {
-    padding: 16,
+    //padding: 16,
   },
   footerLoader: {
     paddingVertical: 20,

@@ -40,7 +40,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
             <View style={styles.imageContainer}>
               {loading && (
                 <ActivityIndicator 
-                  size="small" 
+                  size="large" 
                   color="#0000ff" 
                   style={styles.spinner} 
                 />
@@ -66,19 +66,19 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         style={styles.gallery}
         onIndexChange={setActiveIndex}
       />
-      {images.length > 1  && 
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 12, marginBottom: 12 }}>
+      {images.length > 1 && 
+        <View style={styles.dotsContainer}>
           {images.map((_, index) => (
-            <TouchableOpacity
+            <View
               key={index}
-              onPress={() => setActiveIndex(index)}
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor: index === activeIndex ? 'blue' : 'gray',
-                margin: 5,
-              }}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor: index === activeIndex ? '#0095F6' : '#A8A8A8',
+                  width: index === activeIndex ? 8 : 6,
+                  height: index === activeIndex ? 8 : 6,
+                },
+              ]}
             />
           ))}
         </View>
@@ -113,5 +113,18 @@ const styles = StyleSheet.create({
     top: '50%',
     left: '50%',
     transform: [{ translateX: -18 }, { translateY: -18 }],
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 8,
+    marginHorizontal: 2,
   },
 });
