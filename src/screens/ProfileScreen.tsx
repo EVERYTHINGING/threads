@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import type { RootStackScreenProps } from '../types';
 import { useAuth } from '../hooks/useAuth';
+import { Loading } from '../components/Loading';
 
 export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
   const { user, loading, signOut } = useAuth();
@@ -18,7 +19,7 @@ export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
   if (loading || !user) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <Loading size={100} />
       </View>
     );
   }

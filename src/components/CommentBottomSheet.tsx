@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { formatDistanceToNow } from 'date-fns';
 import { useComments } from '../hooks/useComments';
+import { Loading } from './Loading';
 
 interface CommentBottomSheetProps {
   postId: number;
@@ -51,7 +52,7 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
 
       <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
         {isLoading ? (
-          <ActivityIndicator size="large" color="#007AFF" />
+          <Loading size={100} />
         ) : (
           comments?.map(comment => (
             <View key={comment.id} style={styles.commentCard}>
@@ -77,7 +78,7 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
           disabled={addComment.isPending}
         >
           {addComment.isPending ? (
-            <ActivityIndicator color="white" size="small" />
+            <Loading size={100} />
           ) : (
             <Text style={styles.buttonText}>Post</Text>
           )}

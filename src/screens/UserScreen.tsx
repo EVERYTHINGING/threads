@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import type { RootStackScreenProps } from '../types';
 import { Feed } from '../components/Feed';
 import { useUser } from '../hooks/useUser';
+import { Loading } from '../components/Loading';
 
 export function UserScreen({ route, navigation }: RootStackScreenProps<'User'>) {
   const { userId } = route.params;
@@ -11,7 +12,7 @@ export function UserScreen({ route, navigation }: RootStackScreenProps<'User'>) 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <Loading size={100} />
       </View>
     );
   }

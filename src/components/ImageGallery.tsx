@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Dimensions, TouchableOpacity, Image, ActivityIndicator, Animated } from 'react-native';
 import Gallery, { GalleryRef }from 'react-native-awesome-gallery';
 import type { PostImage } from '../types';
+import { Loading } from './Loading';
 
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 
@@ -39,11 +40,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           return (
             <View style={styles.imageContainer}>
               {loading && (
-                <ActivityIndicator 
-                  size="large" 
-                  color="#0000ff" 
-                  style={styles.spinner} 
-                />
+                <Loading size={100} />
               )}
               <Animated.Image 
                 source={{ uri: item }} 

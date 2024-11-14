@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { StyleSheet, FlatList, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList, View, TouchableOpacity } from 'react-native';
 import { PostCard } from './PostCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { CommentBottomSheet } from './CommentBottomSheet';
 import { usePosts } from '../hooks/usePosts';
 import type { Post } from '../types';
+import { Loading } from './Loading';
 
 interface FeedProps {
   navigation: any;
@@ -41,7 +42,7 @@ export function Feed({ navigation, userId }: FeedProps) {
     if (!isFetchingNextPage) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <Loading size={100} />
       </View>
     );
   };
@@ -49,7 +50,7 @@ export function Feed({ navigation, userId }: FeedProps) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <Loading size={100} />
       </View>
     );
   }
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  listContainer: {
+  listContainer: { 
     //padding: 16,
   },
   footerLoader: {
