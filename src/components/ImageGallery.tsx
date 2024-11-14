@@ -40,7 +40,9 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           return (
             <View style={styles.imageContainer}>
               {loading && (
-                <Loading size={100} />
+                <View style={styles.loadingContainer}>
+                  <Loading />
+                </View>
               )}
               <Animated.Image 
                 source={{ uri: item }} 
@@ -123,5 +125,11 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 8,
     marginHorizontal: 2,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -35 }, { translateY: -70 }],
   },
 });

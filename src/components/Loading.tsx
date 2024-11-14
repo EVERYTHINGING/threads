@@ -5,7 +5,7 @@ interface LoadingProps {
   size?: number;
 }
 
-export function Loading({ size = 36 }: LoadingProps) {
+export function Loading({ size = 70 }: LoadingProps) {
   return (
     <View style={styles.container}>
       <Image 

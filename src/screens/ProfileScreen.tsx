@@ -19,7 +19,7 @@ export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
   if (loading || !user) {
     return (
       <View style={styles.loadingContainer}>
-        <Loading size={100} />
+        <Loading  />
       </View>
     );
   }

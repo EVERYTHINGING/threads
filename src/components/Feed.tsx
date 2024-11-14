@@ -42,7 +42,7 @@ export function Feed({ navigation, userId }: FeedProps) {
     if (!isFetchingNextPage) return null;
     return (
       <View style={styles.footerLoader}>
-        <Loading size={100} />
+        <Loading  />
       </View>
     );
   };
@@ -50,7 +50,7 @@ export function Feed({ navigation, userId }: FeedProps) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Loading size={100} />
+        <Loading  />
       </View>
     );
   }

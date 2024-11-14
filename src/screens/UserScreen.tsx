@@ -12,7 +12,7 @@ export function UserScreen({ route, navigation }: RootStackScreenProps<'User'>) 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Loading size={100} />
+        <Loading  />
       </View>
     );
   }
@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   userInfo: {
-    padding: 16,
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',

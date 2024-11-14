@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { formatDistanceToNow } from 'date-fns';
 import { useComments } from '../hooks/useComments';
@@ -52,7 +52,7 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
 
       <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
         {isLoading ? (
-          <Loading size={100} />
+          <Loading  />
         ) : (
           comments?.map(comment => (
             <View key={comment.id} style={styles.commentCard}>
@@ -78,9 +78,12 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
           disabled={addComment.isPending}
         >
           {addComment.isPending ? (
-            <Loading size={100} />
+            <Loading />
           ) : (
-            <Text style={styles.buttonText}>Post</Text>
+            <Image 
+              source={require('../../assets/up-arrow.png')} 
+              style={styles.buttonIcon}
+            />
           )}
         </TouchableOpacity>
       </View>
@@ -136,16 +139,14 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 16,
     height: 40,
-    borderRadius: 20,
+    width: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: '600',
+  buttonIcon: {
+    width: 30,
+    height: 30,
   },
   bottomSheetBackground: {
     backgroundColor: 'white',
