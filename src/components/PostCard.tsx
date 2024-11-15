@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import type { Post } from '../types';
 import { ImageGallery } from './ImageGallery';
@@ -40,15 +40,25 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
         <ImageGallery images={post.images} />
       )}
 
-      <TouchableOpacity 
-        style={styles.commentButton}
-        onPress={() => onCommentPress(post.id)}
-      >
-        <Text style={styles.commentEmoji}>💅</Text>
-        <Text style={styles.commentButtonText}>
-          {commentCount} Comments
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity 
+          style={styles.commentButton}
+          onPress={() => onCommentPress(post.id)}
+        >
+          <Text style={styles.commentEmoji}>💅</Text>
+          <Text style={styles.commentButtonText}>
+            {commentCount} Comments
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.saveButton}>
+          <Image 
+            source={require('../../assets/bear-hugging-heart.png')} 
+            style={styles.saveButtonIcon}
+          />
+          <Text style={styles.saveButtonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -112,7 +122,30 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   commentEmoji: {
-    fontSize: 16,
+    fontSize: 30,
     marginRight: 8,
+  },
+  saveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  saveButtonIcon: {
+    width: 30,
+    height: 30,
+    marginRight: 8,
+  },
+  saveButtonText: {
+    fontFamily: typography.medium,
+    color: '#8e8e8e',
+    fontSize: 15,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#efefef',
+    paddingRight: 12,
   },
 }); 
