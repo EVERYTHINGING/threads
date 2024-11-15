@@ -111,12 +111,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   commentMeta: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#666',
     marginBottom: 4,
   },
   commentContent: {
-    fontSize: 14,
+    fontSize: 18,
   },
   inputContainer: {
     padding: 16,

@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.medium,
     marginLeft: 8,
     color: '#8e8e8e',
-    fontSize: 15,
+    fontSize: 18,
   },
   commentEmoji: {
     fontSize: 30,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontFamily: typography.medium,
     color: '#8e8e8e',
-    fontSize: 15,
+    fontSize: 18,
   },
   actionsContainer: {
     flexDirection: 'row',
