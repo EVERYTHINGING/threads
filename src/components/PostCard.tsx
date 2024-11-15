@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types';
 import { typography } from '../theme/typography';
+import { usePosts } from '../hooks/usePosts';
+import { useAuth } from '../hooks/useAuth';
 
 interface PostCardProps {
   post: Post;
@@ -16,9 +18,24 @@ interface PostCardProps {
 
 export function PostCard({ post, onCommentPress }: PostCardProps) {
   const { comments } = useComments(post.id);
+  const { savePost } = usePosts();
+  const { user } = useAuth();
   const commentCount = comments?.length || 0;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
+  const isSaved = post.saved_by?.includes(user?.id.toString() || '');
+  
+  const handleSave = async () => {
+    try {
+      await savePost.mutateAsync({
+        postId: post.id,
+        savedBy: post.saved_by || []
+      });
+    } catch (error) {
+      console.error('Failed to save post:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -51,12 +68,27 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.saveButton}>
-          <Image 
-            source={require('../../assets/bear-hugging-heart.png')} 
-            style={styles.saveButtonIcon}
-          />
-          <Text style={styles.saveButtonText}>Save</Text>
+        <TouchableOpacity 
+          style={styles.saveButton}
+          onPress={handleSave}
+          disabled={savePost.isPending}
+        >
+          <View style={styles.emojiContainer}>
+            {isSaved ? (
+            <Image 
+              source={require('../../assets/bear-hugging-heart.png')} 
+              style={[
+                styles.saveButtonIcon,
+                savePost.isPending && { opacity: 0.5 }
+              ]}
+            />
+            ) : (
+              <Text style={styles.heartEmoji}>💖</Text>
+            )}
+          </View>
+          <Text style={styles.saveButtonText}>
+            {isSaved ? 'Saved' : 'Save'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -131,9 +163,13 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   saveButtonIcon: {
-    width: 30,
-    height: 30,
+    width: 35,
+    height: 35,
     marginRight: 8,
+  },
+  heartEmoji: {
+    fontSize: 25,
+    marginRight: 0
   },
   saveButtonText: {
     fontFamily: typography.medium,
@@ -147,5 +183,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#efefef',
     paddingRight: 12,
+  },
+  emojiContainer: {
+    width: 30,
+    height: 30,
+    marginRight: 8,
   },
 }); 

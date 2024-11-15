@@ -177,6 +177,30 @@ export function usePosts(options: UsePostsOptions = {}) {
     return [];
   };
 
+  const savePost = useMutation({
+    mutationFn: async ({ postId, savedBy }: { postId: number; savedBy: string[] }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('Not authenticated');
+
+      const { data: post, error } = await supabase
+        .from('posts')
+        .update({ 
+          saved_by: savedBy.length
+            ? savedBy.filter(id => id !== userData.user.id.toString())
+            : [userData.user.id]
+        })
+        .eq('id', postId)
+        .select();
+
+      if (error) throw error;
+      console.log('Post saved:', post);
+      return post;
+    },
+    onSuccess: async() => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+  });
+
   return {
     posts: posts?.pages.flatMap(page => page.posts) ?? [],
     isLoading,
@@ -185,5 +209,6 @@ export function usePosts(options: UsePostsOptions = {}) {
     isFetchingNextPage,
     createPost,
     pickImages,
+    savePost,
   };
 }

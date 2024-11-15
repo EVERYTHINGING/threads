@@ -22,6 +22,7 @@ export interface Post {
   created_at: string;
   user?: User;
   images?: PostImage[];
+  saved_by?: string[];
 }
 
 export interface Comment {
