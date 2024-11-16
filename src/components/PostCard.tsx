@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import type { Post } from '../types';
-import { ImageGallery } from './ImageGallery';
 import { useComments } from '../hooks/useComments';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -10,6 +9,7 @@ import type { RootStackParamList } from '../types';
 import { typography } from '../theme/typography';
 import { usePosts } from '../hooks/usePosts';
 import { useAuth } from '../hooks/useAuth';
+import ImageSlider from './ImageSlider';
 
 interface PostCardProps {
   post: Post;
@@ -54,7 +54,7 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
       <Text style={styles.content}>{post.content}</Text>
       
       {post.images && post.images.length > 0 && (
-        <ImageGallery images={post.images} />
+        <ImageSlider images={post.images.map(image => image.url)} />
       )}
 
       <View style={styles.actionsContainer}>
@@ -102,7 +102,7 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    marginBottom: 8,
+    marginTop: 20,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#dbdbdb',
