@@ -75,15 +75,19 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
         >
           <View style={styles.emojiContainer}>
             {isSaved ? (
-            <Image 
-              source={require('../../assets/bear-hugging-heart.png')} 
-              style={[
-                styles.saveButtonIcon,
-                savePost.isPending && { opacity: 0.5 }
-              ]}
-            />
+              <View style={styles.saveIconContainer}>
+                <Text style={styles.heartEmoji}>💖</Text>
+              </View>
             ) : (
-              <Text style={styles.heartEmoji}>💖</Text>
+              <View style={styles.saveIconContainer}>
+                <Text style={styles.heartEmoji}>🩷</Text>
+                {savePost.isPending && (
+                  <Image 
+                    source={require('../../assets/sparkles.gif')} 
+                    style={styles.sparklesOverlay}
+                  />
+                )}
+              </View>
             )}
           </View>
           <Text style={styles.saveButtonText}>
@@ -188,5 +192,15 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginRight: 8,
+  },
+  saveIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sparklesOverlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
   },
 }); 
