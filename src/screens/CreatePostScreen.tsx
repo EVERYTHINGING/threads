@@ -6,6 +6,7 @@ import { usePosts } from '../hooks/usePosts';
 export function CreatePostScreen({ navigation }: RootStackScreenProps<'CreatePost'>) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [price, setPrice] = useState('');
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const { createPost, pickImages } = usePosts();
 
@@ -19,8 +20,14 @@ export function CreatePostScreen({ navigation }: RootStackScreenProps<'CreatePos
   };
 
   const handleCreatePost = async () => {
-    if (!title.trim() || !content.trim()) {
+    if (!title.trim() || !content.trim() || !price.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice) || numericPrice <= 0) {
+      Alert.alert('Error', 'Please enter a valid price');
       return;
     }
 
@@ -28,6 +35,7 @@ export function CreatePostScreen({ navigation }: RootStackScreenProps<'CreatePos
       await createPost.mutateAsync({ 
         title, 
         content,
+        price: numericPrice,
         images: selectedImages
       });
       navigation.navigate('Home');
@@ -44,6 +52,15 @@ export function CreatePostScreen({ navigation }: RootStackScreenProps<'CreatePos
         value={title}
         onChangeText={setTitle}
       />
+      
+      <TextInput
+        style={styles.priceInput}
+        placeholder="Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="decimal-pad"
+      />
+
       <TextInput
         style={styles.contentInput}
         placeholder="Content"
@@ -98,6 +115,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   titleInput: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  priceInput: {
     height: 48,
     borderWidth: 1,
     borderColor: '#ddd',

@@ -10,6 +10,13 @@ interface UsePostsOptions {
   limit?: number;
 }
 
+interface CreatePostData {
+  title: string;
+  content: string;
+  price: number;
+  images?: string[];
+}
+
 export function usePosts(options: UsePostsOptions = {}) {
   const { userId, limit = 5 } = options;
   const queryClient = useQueryClient();
@@ -105,10 +112,12 @@ export function usePosts(options: UsePostsOptions = {}) {
     mutationFn: async ({ 
       title, 
       content, 
+      price, 
       images 
     }: { 
       title: string; 
       content: string;
+      price: number;
       images?: string[];
     }) => {
       console.log('Creating post with images:', images?.length);
@@ -122,6 +131,7 @@ export function usePosts(options: UsePostsOptions = {}) {
         .insert([{ 
           title, 
           content,
+          price,
           user_id: userData.user.id 
         }])
         .select()

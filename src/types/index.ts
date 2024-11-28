@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Linking } from 'react-native';
 
 export interface User {
   id: number;
@@ -19,12 +20,13 @@ export interface PostImage {
 export interface Post {
   id: number;
   user_id: number;
-  title: string;
+  title?: string;
   content: string;
   created_at: string;
-  user?: User;
-  images?: PostImage[];
   saved_by?: string[];
+  price: number;
+  user?: User;
+  images?: { url: string }[];
 }
 
 export interface Comment {

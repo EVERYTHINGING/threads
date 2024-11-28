@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Linking } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { Post } from '../types';
@@ -38,20 +38,50 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
     }
   };
 
+  const handleVenmoPress = () => {
+    if (!post.user?.venmo_username || !post.price) return;
+    
+    const venmoUrl = `https://venmo.com/${post.user.venmo_username}?txn=pay&amount=${post.price}&note=${encodeURIComponent(post.title || '')}`;
+    console.log('Venmo URL:', venmoUrl);
+    Linking.openURL(venmoUrl);
+  };
+
   return (
     <View style={[styles.container, isProfileView && styles.profileContainer]}>
-      {!isProfileView && (
-        <View style={styles.header}>
-          <View style={styles.userAvatar} />
-          <TouchableOpacity 
-            onPress={() => navigation.navigate('User', { userId: post.user_id })}
-          >
-            <Text style={styles.username}>
-              {post.user?.username}
-            </Text>
-          </TouchableOpacity>
+      <View style={styles.topContainer}>
+        {!isProfileView && (
+          <View style={styles.header}>
+            <View style={styles.userAvatar} />
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('User', { userId: post.user_id })}
+            >
+              <Text style={styles.username}>
+                {post.user?.username}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <View style={styles.priceContainer}>
+          {post.price &&
+            <View style={styles.priceWrapper}>
+              <Text style={styles.dollarSign}>$</Text>
+              <Text style={styles.priceText}>{post.price}</Text>
+            </View>
+          }
+          {post.user?.venmo_username && (
+            <TouchableOpacity 
+              onPress={handleVenmoPress}
+              style={styles.venmoButton}
+            >
+              <Image 
+                source={require('../../assets/venmo.png')} 
+                style={styles.venmoLogo}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          )}
         </View>
-      )}
+      </View>
       
       <View style={[
         styles.metaContainer, 
@@ -237,5 +267,38 @@ const styles = StyleSheet.create({
   },
   sparklesEmoji: {
     fontSize: 16,
+  },
+  topContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 12,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  priceWrapper: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  dollarSign: {
+    fontSize: 14,
+    fontFamily: typography.semiBold,
+    color: '#262626',
+    marginTop: 4,
+  },
+  priceText: {
+    fontSize: 24,
+    fontFamily: typography.semiBold,
+    color: '#262626',
+  },
+  venmoButton: {
+    padding: 4,
+  },
+  venmoLogo: {
+    width: 30,
+    height: 30,
   },
 }); 
