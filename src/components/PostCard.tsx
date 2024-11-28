@@ -49,36 +49,41 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
   return (
     <View style={[styles.container, isProfileView && styles.profileContainer]}>
       <View style={styles.topContainer}>
-        {!isProfileView && (
-          <View style={styles.header}>
-            <View style={styles.userAvatar} />
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('User', { userId: post.user_id })}
-            >
-              <Text style={styles.username}>
-                {post.user?.username}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <View style={styles.priceContainer}>
-          {post.price &&
-            <View style={styles.priceWrapper}>
-              <Text style={styles.dollarSign}>$</Text>
-              <Text style={styles.priceText}>{post.price}</Text>
+        <View style={styles.headerContainer}>
+          {!isProfileView && (
+            <View style={styles.header}>
+              <View style={styles.userAvatar} />
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('User', { userId: post.user_id })}
+              >
+                <Text style={styles.username}>
+                  {post.user?.username}
+                </Text>
+              </TouchableOpacity>
             </View>
-          }
-          {post.user?.venmo_username && (
-            <TouchableOpacity 
-              onPress={handleVenmoPress}
-              style={styles.venmoButton}
-            >
-              <Image 
-                source={require('../../assets/venmo.png')} 
-                style={styles.venmoLogo}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+          )}
+        </View>
+        <View style={styles.priceContainer}>
+          {post.price && (
+            <>
+              <View style={styles.priceWrapper}>
+                <Text style={styles.dollarSign}>$</Text>
+                <Text style={styles.priceText}>{post.price}</Text>
+              </View>
+            
+              {post.user?.venmo_username && (
+                <TouchableOpacity 
+                  onPress={handleVenmoPress}
+                  style={styles.venmoButton}
+                >
+                  <Image 
+                    source={require('../../assets/venmo.png')} 
+                    style={styles.venmoLogo}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              )}
+            </>
           )}
         </View>
       </View>
@@ -273,6 +278,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingRight: 12,
+  },
+  headerContainer: {
+    flex: 1,
   },
   priceContainer: {
     flexDirection: 'row',

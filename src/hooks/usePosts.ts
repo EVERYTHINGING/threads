@@ -8,6 +8,7 @@ import { Buffer } from 'buffer';
 interface UsePostsOptions {
   userId?: number;
   limit?: number;
+  sortOrder?: 'desc' | 'asc';
 }
 
 interface CreatePostData {
@@ -18,11 +19,11 @@ interface CreatePostData {
 }
 
 export function usePosts(options: UsePostsOptions = {}) {
-  const { userId, limit = 5 } = options;
+  const { userId, limit = 5, sortOrder = 'desc' } = options;
   const queryClient = useQueryClient();
 
   const { data: posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts', { userId }],
+    queryKey: ['posts', { userId, sortOrder }],
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('posts')
@@ -31,7 +32,7 @@ export function usePosts(options: UsePostsOptions = {}) {
           user:users(*),
           images:post_images(*)
         `, { count: 'exact' })
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: sortOrder === 'asc' })
         .range(pageParam, pageParam + limit - 1);
 
       // Add user filter if userId is provided
