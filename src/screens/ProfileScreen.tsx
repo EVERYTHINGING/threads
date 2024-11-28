@@ -1,15 +1,90 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, TextInput, Image } from 'react-native';
 import type { RootStackScreenProps } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Loading } from '../components/Loading';
 import { supabase } from '../lib/supabase';
+import * as ImagePicker from 'expo-image-picker';
+import { Buffer } from 'buffer';
+import * as FileSystem from 'expo-file-system';
 
 export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
   const { user, loading, signOut } = useAuth();
   const [venmoUsername, setVenmoUsername] = useState(user?.venmo_username || '');
   const [isSaving, setIsSaving] = useState(false);
   const hasChanges = venmoUsername !== user?.venmo_username;
+
+  const handlePickAvatar = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please grant permission to access your photos');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        await uploadAvatar(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const uploadAvatar = async (uri: string) => {
+    try {
+      setIsSaving(true);
+      
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const ext = uri.split('.').pop()?.toLowerCase() || 'jpg';
+      const filename = `avatar-${user?.id}-${Date.now()}.${ext}`;
+      const buffer = Buffer.from(base64, 'base64');
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filename, buffer, {
+          contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filename, {
+          transform: {
+            width: 150,
+            height: 150,
+            resize: 'cover'
+          }
+        });
+
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) throw new Error('Not authenticated');
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ avatar_url: publicUrl })
+        .eq('id', authUser.id)
+        .select();
+
+      if (updateError) throw updateError;
+
+    } catch (error) {
+      console.error('Upload error:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -50,6 +125,25 @@ export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
+        <TouchableOpacity 
+          style={styles.avatarContainer} 
+          onPress={handlePickAvatar}
+        >
+          {user.avatar_url ? (
+            <Image 
+              source={{ uri: user.avatar_url }} 
+              style={styles.avatar}
+            />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.avatarText}>
+                {user.username.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+          <Text style={styles.changeAvatarText}>Change Avatar</Text>
+        </TouchableOpacity>
+
         <Text style={styles.username}>{user.username}</Text>
         <Text style={styles.email}>{user.email}</Text>
         <Text style={styles.status}>
@@ -170,5 +264,33 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#f0f0f0',
+  },
+  avatarPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 40,
+    fontWeight: '600',
+  },
+  changeAvatarText: {
+    color: '#007AFF',
+    fontSize: 16,
+    marginTop: 8,
   },
 });

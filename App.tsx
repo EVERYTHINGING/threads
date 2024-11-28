@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Image, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -12,12 +12,15 @@ import { RootStackParamList } from './src/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { UserScreen } from './src/screens/UserScreen';
+import { useAuth } from './src/hooks/useAuth';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
 
 export default function App() {
+  const { user } = useAuth();
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
@@ -40,7 +43,18 @@ export default function App() {
                     onPress={() => navigation.navigate('Profile')}
                     style={styles.headerButton}
                   >
-                    <Icon name="account-circle" size={32} color="#666" />
+                    {user?.avatar_url ? (
+                      <Image 
+                        source={{ uri: user.avatar_url }} 
+                        style={styles.avatar}
+                      />
+                    ) : (
+                      <View style={styles.avatarPlaceholder}>
+                        <Text style={styles.avatarText}>
+                          {user?.username?.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                    )}
                   </TouchableOpacity>
                 ),
                 headerRight: () => (
@@ -81,5 +95,24 @@ const styles = StyleSheet.create({
   headerButton: {
     marginHorizontal: 8,
     padding: 4,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f0f0f0',
+  },
+  avatarPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

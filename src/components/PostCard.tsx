@@ -52,7 +52,22 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
         <View style={styles.headerContainer}>
           {!isProfileView && (
             <View style={styles.header}>
-              <View style={styles.userAvatar} />
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('User', { userId: post.user_id })}
+              >
+                {post.user?.avatar_url ? (
+                  <Image 
+                    source={{ uri: post.user.avatar_url }} 
+                    style={styles.userAvatar}
+                  />
+                ) : (
+                  <View style={styles.userAvatarPlaceholder}>
+                    <Text style={styles.userAvatarText}>
+                      {post.user?.username?.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
               <TouchableOpacity 
                 onPress={() => navigation.navigate('User', { userId: post.user_id })}
               >
@@ -162,7 +177,20 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     marginRight: 8,
-    backgroundColor: '#efefef',
+  },
+  userAvatarPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userAvatarText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   username: {
     fontFamily: typography.semiBold,
