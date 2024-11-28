@@ -38,13 +38,20 @@ export default function App() {
                 headerLeft: () => (
                   <TouchableOpacity 
                     onPress={() => navigation.navigate('Profile')}
-                    style={styles.profileButton}
+                    style={styles.headerButton}
                   >
                     <Icon name="account-circle" size={32} color="#666" />
                   </TouchableOpacity>
                 ),
+                headerRight: () => (
+                  <TouchableOpacity 
+                    onPress={() => navigation.navigate('CreatePost')}
+                    style={styles.headerButton}
+                  >
+                    <Icon name="add" size={32} color="#007AFF" />
+                  </TouchableOpacity>
+                ),
                 headerBackVisible: false,
-                headerRight: undefined,
               })}
             />
             <Stack.Screen name="CreatePost" component={CreatePostScreen} />
@@ -71,8 +78,8 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  profileButton: {
-    marginRight: 8,
+  headerButton: {
+    marginHorizontal: 8,
     padding: 4,
   },
 });

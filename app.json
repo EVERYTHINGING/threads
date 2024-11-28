@@ -55,6 +55,7 @@
         "asset": "./assets/fonts/Quicksand-Bold.ttf",
         "family": "Quicksand-Bold"
       }
-    ]
+    ],
+    "scheme": "your-scheme"
   }
 }

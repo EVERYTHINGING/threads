@@ -11,9 +11,10 @@ import { Loading } from './Loading';
 interface FeedProps {
   navigation: any;
   userId?: number;
+  isProfileView?: boolean;
 }
 
-export function Feed({ navigation, userId }: FeedProps) {
+export function Feed({ navigation, userId, isProfileView = false }: FeedProps) {
   const { 
     posts, 
     isLoading, 
@@ -63,6 +64,7 @@ export function Feed({ navigation, userId }: FeedProps) {
           <PostCard 
             post={item} 
             onCommentPress={handleCommentPress}
+            isProfileView={isProfileView}
           />
         )}
         keyExtractor={item => item.id.toString()}
@@ -75,13 +77,6 @@ export function Feed({ navigation, userId }: FeedProps) {
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
       />
-
-      <TouchableOpacity 
-        style={styles.fab} 
-        onPress={() => navigation.navigate('CreatePost')}
-      >
-        <Icon name="add" size={24} color="white" />
-      </TouchableOpacity>
 
       <CommentBottomSheet
         postId={selectedPostId || 0}
@@ -108,17 +103,5 @@ const styles = StyleSheet.create({
   footerLoader: {
     paddingVertical: 20,
     alignItems: 'center',
-  },
-  fab: {
-    position: 'absolute',
-    right: 16,
-    bottom: 16,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
   },
 }); 

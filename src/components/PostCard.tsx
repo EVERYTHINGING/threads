@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { Post } from '../types';
 import { useComments } from '../hooks/useComments';
 import { useNavigation } from '@react-navigation/native';
@@ -14,9 +15,10 @@ import ImageSlider from './ImageSlider';
 interface PostCardProps {
   post: Post;
   onCommentPress: (postId: number) => void;
+  isProfileView?: boolean;
 }
 
-export function PostCard({ post, onCommentPress }: PostCardProps) {
+export function PostCard({ post, onCommentPress, isProfileView = false }: PostCardProps) {
   const { comments } = useComments(post.id);
   const { savePost } = usePosts();
   const { user } = useAuth();
@@ -37,21 +39,39 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.userAvatar} />
-        <TouchableOpacity 
-          onPress={() => navigation.navigate('User', { userId: post.user_id })}
-        >
-          <Text style={styles.username}>
-            {post.user?.username}
-          </Text>
-        </TouchableOpacity>
+    <View style={[styles.container, isProfileView && styles.profileContainer]}>
+      {!isProfileView && (
+        <View style={styles.header}>
+          <View style={styles.userAvatar} />
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('User', { userId: post.user_id })}
+          >
+            <Text style={styles.username}>
+              {post.user?.username}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      
+      <View style={[
+        styles.metaContainer, 
+        isProfileView && styles.profileMetaContainer
+      ]}>
+        <Text style={styles.sparklesEmoji}>✨</Text>
+        <Text style={[
+          styles.meta, 
+          isProfileView && styles.profileMeta
+        ]}>
+          {formatDistanceToNow(new Date(post.created_at))} ago
+        </Text>
       </View>
-      <Text style={styles.meta}>
-        {formatDistanceToNow(new Date(post.created_at))} ago
+      
+      <Text style={[
+        styles.content,
+        isProfileView && styles.profileContent
+      ]}>
+        {post.content}
       </Text>
-      <Text style={styles.content}>{post.content}</Text>
       
       {post.images && post.images.length > 0 && (
         <ImageSlider images={post.images.map(image => image.url)} />
@@ -75,19 +95,9 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
         >
           <View style={styles.emojiContainer}>
             {isSaved ? (
-              <View style={styles.saveIconContainer}>
-                <Text style={styles.heartEmoji}>💖</Text>
-              </View>
+              <Text style={styles.heartEmoji}>💖</Text>
             ) : (
-              <View style={styles.saveIconContainer}>
-                <Text style={styles.heartEmoji}>🩷</Text>
-                {savePost.isPending && (
-                  <Image 
-                    source={require('../../assets/sparkles.gif')} 
-                    style={styles.sparklesOverlay}
-                  />
-                )}
-              </View>
+              <Text style={styles.heartEmoji}>🩷</Text>
             )}
           </View>
           <Text style={styles.saveButtonText}>
@@ -102,7 +112,7 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    marginTop: 20,
+    paddingVertical: 16,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#dbdbdb',
@@ -137,12 +147,25 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 12,
   },
+  metaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    marginBottom: 8,
+    gap: 4,
+  },
+  profileMetaContainer: {
+    marginBottom: 12,
+  },
   meta: {
     fontFamily: typography.regular,
     fontSize: 12,
     color: '#8e8e8e',
-    paddingHorizontal: 12,
-    marginBottom: 8,
+  },
+  profileMeta: {
+    fontSize: 16,
+    color: '#262626',
+    fontFamily: typography.medium,
   },
   commentButton: {
     flexDirection: 'row',
@@ -202,5 +225,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     zIndex: 1,
+  },
+  profileContainer: {
+    marginTop: 10,
+    marginBottom: 10,
+    paddingVertical: 16,
+  },
+  profileContent: {
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  sparklesEmoji: {
+    fontSize: 16,
   },
 }); 

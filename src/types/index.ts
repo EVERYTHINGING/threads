@@ -5,6 +5,8 @@ export interface User {
   username: string;
   email: string;
   is_approved_seller: boolean;
+  avatar_url?: string;
+  venmo_username?: string;
 }
 
 export interface PostImage {
