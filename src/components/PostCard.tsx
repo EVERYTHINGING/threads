@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Linking } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -78,29 +78,22 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
             </View>
           )}
         </View>
-        <View style={styles.priceContainer}>
-          {post.price && (
-            <>
-              <View style={styles.priceWrapper}>
-                <Text style={styles.dollarSign}>$</Text>
-                <Text style={styles.priceText}>{post.price}</Text>
-              </View>
-            
-              {post.user?.venmo_username && (
-                <TouchableOpacity 
-                  onPress={handleVenmoPress}
-                  style={styles.venmoButton}
-                >
-                  <Image 
-                    source={require('../../assets/venmo.png')} 
-                    style={styles.venmoLogo}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              )}
-            </>
-          )}
-        </View>
+        {post.price && post.user?.venmo_username && (
+          <TouchableOpacity 
+            onPress={handleVenmoPress}
+            style={styles.venmoButton}
+          >
+            <View style={styles.priceWrapper}>
+              <Text style={styles.dollarSign}>$</Text>
+              <Text style={styles.priceText}>{post.price}</Text>
+            </View>
+            <Image 
+              source={require('../../assets/venmo.png')} 
+              style={styles.venmoLogo}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        )}
       </View>
       
       <View style={[
@@ -162,7 +155,8 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    paddingVertical: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#dbdbdb',
@@ -313,27 +307,41 @@ const styles = StyleSheet.create({
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
   priceWrapper: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    marginRight: 8,
   },
   dollarSign: {
     fontSize: 14,
     fontFamily: typography.semiBold,
-    color: '#262626',
-    marginTop: 4,
+    marginRight: 1,
+    marginTop: -5
   },
   priceText: {
-    fontSize: 24,
+    fontSize: 25,
     fontFamily: typography.semiBold,
-    color: '#262626',
   },
   venmoButton: {
-    padding: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    paddingRight: 25,
+    borderRadius: 20,
+    justifyContent: 'space-between',
+    minWidth: 85,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginRight: -25,
   },
   venmoLogo: {
+    display: 'none',
     width: 30,
     height: 30,
   },
