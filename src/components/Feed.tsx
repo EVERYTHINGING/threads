@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { StyleSheet, FlatList, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, FlatList, View, TouchableOpacity, Text, Image } from 'react-native';
 import { PostCard } from './PostCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -13,9 +13,14 @@ interface FeedProps {
   userId?: number;
   isProfileView?: boolean;
   showSavedOnly?: boolean;
+  user?: {
+    username: string;
+    avatar_url?: string;
+    is_approved_seller?: boolean;
+  };
 }
 
-export function Feed({ navigation, userId, isProfileView = false, showSavedOnly = false }: FeedProps) {
+export function Feed({ navigation, userId, isProfileView = false, showSavedOnly = false, user }: FeedProps) {
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const { 
     posts, 
@@ -57,6 +62,36 @@ export function Feed({ navigation, userId, isProfileView = false, showSavedOnly 
     );
   };
 
+  const renderHeader = () => {
+    if (!isProfileView || !user) return null;
+    return (
+      <View style={styles.userInfo}>
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarContainer}>
+            {user.avatar_url ? (
+              <Image 
+                source={{ uri: user.avatar_url }} 
+                style={styles.avatar}
+              />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarText}>
+                  {user.username.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.userDetails}>
+            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.status}>
+              {user.is_approved_seller ? "Approved Seller" : "Regular User"}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -90,6 +125,7 @@ export function Feed({ navigation, userId, isProfileView = false, showSavedOnly 
             isProfileView={isProfileView}
           />
         )}
+        ListHeaderComponent={renderHeader}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         onEndReached={() => {
@@ -140,5 +176,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  userInfo: {
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    marginRight: 16,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#f0f0f0',
+  },
+  avatarPlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 32,
+    fontWeight: '600',
+  },
+  userDetails: {
+    flex: 1,
+  },
+  username: {
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#262626',
+  },
+  status: {
+    fontSize: 16,
+    color: '#666',
   },
 }); 

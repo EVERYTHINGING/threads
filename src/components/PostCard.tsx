@@ -19,6 +19,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onCommentPress, isProfileView = false }: PostCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const { comments } = useComments(post.id);
   const { savePost } = usePosts();
   const { user } = useAuth();
@@ -45,6 +46,11 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
     console.log('Venmo URL:', venmoUrl);
     Linking.openURL(venmoUrl);
   };
+
+  const shouldTruncate = post.content.length > 200;
+  const displayContent = shouldTruncate && !isExpanded 
+    ? `${post.content.slice(0, 200)}...` 
+    : post.content;
 
   return (
     <View style={[styles.container, isProfileView && styles.profileContainer]}>
@@ -78,22 +84,6 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
             </View>
           )}
         </View>
-        {post.price && post.user?.venmo_username && (
-          <TouchableOpacity 
-            onPress={handleVenmoPress}
-            style={styles.venmoButton}
-          >
-            <View style={styles.priceWrapper}>
-              <Text style={styles.dollarSign}>$</Text>
-              <Text style={styles.priceText}>{post.price}</Text>
-            </View>
-            <Image 
-              source={require('../../assets/venmo.png')} 
-              style={styles.venmoLogo}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        )}
       </View>
       
       <View style={[
@@ -109,16 +99,50 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
         </Text>
       </View>
       
-      <Text style={[
-        styles.content,
-        isProfileView && styles.profileContent
-      ]}>
-        {post.content}
-      </Text>
-      
-      {post.images && post.images.length > 0 && (
-        <ImageSlider images={post.images.map(image => image.url)} />
-      )}
+      <View style={styles.contentContainer}>
+        <Text 
+          style={[
+            styles.content,
+            isProfileView && styles.profileContent,
+            shouldTruncate && !isExpanded && styles.truncatedContent
+          ]}
+        >
+          {displayContent}
+        </Text>
+        
+        {shouldTruncate && (
+          <TouchableOpacity 
+            style={styles.expandButton}
+            onPress={() => setIsExpanded(!isExpanded)}
+          >
+            <Text style={styles.expandButtonText}>
+              {isExpanded ? 'Show Less' : 'Show More'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {post.price && post.user?.venmo_username && (
+          <View style={styles.venmoContainer}>
+            <TouchableOpacity 
+              onPress={handleVenmoPress}
+              style={styles.venmoButton}
+            >
+              <View style={styles.priceWrapper}>
+                <Text style={styles.dollarSign}>$</Text>
+                <Text style={styles.priceText}>{post.price}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+        
+        <View style={styles.imageContainer}>
+          {post.images && post.images.length > 0 && (
+            <>
+              <ImageSlider images={post.images.map(image => image.url)} />
+            </>
+          )}
+        </View>
+      </View>
 
       <View style={styles.actionsContainer}>
         <TouchableOpacity 
@@ -167,15 +191,15 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   userAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 30,
     marginRight: 8,
   },
   userAvatarPlaceholder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 30,
     marginRight: 8,
     backgroundColor: '#007AFF',
     justifyContent: 'center',
@@ -183,14 +207,14 @@ const styles = StyleSheet.create({
   },
   userAvatarText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
   },
   username: {
     fontFamily: typography.semiBold,
-    fontSize: 24,
+    fontSize: 20,
     color: '#262626',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   title: {
     fontFamily: typography.medium,
@@ -201,14 +225,14 @@ const styles = StyleSheet.create({
   content: {
     fontFamily: typography.regular,
     fontSize: 18,
-    marginBottom: 20,
+    marginBottom: 0,
     paddingHorizontal: 12,
   },
   metaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    marginBottom: 8,
+    marginBottom: 20,
     gap: 4,
   },
   profileMetaContainer: {
@@ -223,42 +247,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#262626',
     fontFamily: typography.medium,
+    marginBottom: 12,
   },
   commentButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: 8,
     borderTopWidth: 1,
     borderTopColor: '#efefef',
   },
   commentButtonText: {
     fontFamily: typography.medium,
-    marginLeft: 8,
+    marginLeft: 4,
     color: '#8e8e8e',
-    fontSize: 18,
+    fontSize: 16,
   },
   commentEmoji: {
-    fontSize: 30,
-    marginRight: 8,
+    fontSize: 24,
+    marginRight: 4,
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-  },
-  saveButtonIcon: {
-    width: 35,
-    height: 35,
-    marginRight: 8,
+    padding: 8,
   },
   heartEmoji: {
-    fontSize: 25,
-    marginRight: 0
+    fontSize: 20,
   },
   saveButtonText: {
     fontFamily: typography.medium,
     color: '#8e8e8e',
-    fontSize: 18,
+    fontSize: 16,
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -266,12 +285,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#efefef',
-    paddingRight: 12,
+    paddingRight: 8,
   },
   emojiContainer: {
-    width: 30,
-    height: 30,
-    marginRight: 8,
+    width: 24,
+    height: 24,
+    marginRight: 4,
   },
   saveIconContainer: {
     flexDirection: 'row',
@@ -311,38 +330,59 @@ const styles = StyleSheet.create({
   priceWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 8,
   },
   dollarSign: {
     fontSize: 14,
     fontFamily: typography.semiBold,
     marginRight: 1,
-    marginTop: -5
+    marginTop: -5,
+    color: '#262626',
   },
   priceText: {
     fontSize: 25,
     fontFamily: typography.semiBold,
-  },
-  venmoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    paddingRight: 25,
-    borderRadius: 20,
-    justifyContent: 'space-between',
-    minWidth: 85,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginRight: -25,
+    color: '#262626',
   },
   venmoLogo: {
     display: 'none',
     width: 30,
     height: 30,
+  },
+  contentContainer: {
+    position: 'relative',
+  },
+  imageContainer: {
+    position: 'relative',
+  },
+  venmoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    justifyContent: 'space-between',
+    borderWidth: 0,
+    borderColor: '#ddd',
+    boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.2)',
+  },
+  venmoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 12,
+  },
+  truncatedContent: {
+    maxHeight: 200,
+  },
+  expandButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  expandButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
+    fontFamily: typography.medium,
   },
 }); 
