@@ -130,6 +130,10 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
               <View style={styles.priceWrapper}>
                 <Text style={styles.dollarSign}>$</Text>
                 <Text style={styles.priceText}>{post.price}</Text>
+                <Image 
+                  source={require('../../assets/venmo.png')} 
+                  style={styles.venmoLogo}
+                />
               </View>
             </TouchableOpacity>
           </View>
@@ -330,6 +334,7 @@ const styles = StyleSheet.create({
   priceWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   dollarSign: {
     fontSize: 14,
@@ -344,9 +349,10 @@ const styles = StyleSheet.create({
     color: '#262626',
   },
   venmoLogo: {
-    display: 'none',
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
+    marginLeft: 8,
+    resizeMode: 'contain',
   },
   contentContainer: {
     position: 'relative',
@@ -372,6 +378,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingHorizontal: 12,
+    marginTop: 12,
   },
   truncatedContent: {
     maxHeight: 200,
