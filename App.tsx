@@ -93,32 +93,7 @@ export default function App() {
             routeNameRef.current = currentRoute?.name;
           }}
         >
-          <Stack.Navigator 
-            initialRouteName="Login"
-            screenOptions={({ navigation, route }) => ({
-              headerBackVisible: navigation.canGoBack() && navigation.getState().routes[navigation.getState().index - 1]?.name !== 'Login',
-              gestureEnabled: navigation.canGoBack() && navigation.getState().routes[navigation.getState().index - 1]?.name !== 'Login',
-              headerRight: route.name !== 'Login' ? () => (
-                <TouchableOpacity 
-                  onPress={() => navigation.navigate('Profile')}
-                  style={styles.headerButton}
-                >
-                  {user?.avatar_url ? (
-                    <Image 
-                      source={{ uri: user.avatar_url }} 
-                      style={styles.avatar}
-                    />
-                  ) : (
-                    <View style={styles.avatarPlaceholder}>
-                      <Text style={styles.avatarText}>
-                        {user?.username?.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ) : undefined,
-            })}
-          >
+          <Stack.Navigator initialRouteName="Login">
             <Stack.Screen 
               name="Login" 
               component={LoginScreen}
@@ -127,7 +102,32 @@ export default function App() {
                 headerBackVisible: false 
               }}
             />
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen 
+              name="Home" 
+              component={HomeScreen}
+              options={({ navigation }) => ({
+                headerRight: () => (
+                  <TouchableOpacity 
+                    onPress={() => navigation.navigate('Profile')}
+                    style={styles.headerButton}
+                  >
+                    {user?.avatar_url ? (
+                      <Image 
+                        source={{ uri: user.avatar_url }} 
+                        style={styles.avatar}
+                      />
+                    ) : (
+                      <View style={styles.avatarPlaceholder}>
+                        <Text style={styles.avatarText}>
+                          {user?.username?.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ),
+                headerBackVisible: false,
+              })}
+            />
             <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'New Post' }} />
             <Stack.Screen name="SavedPosts" component={SavedPostsScreen} options={{ title: 'Saved Posts' }} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
