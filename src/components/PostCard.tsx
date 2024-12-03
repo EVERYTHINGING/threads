@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#dbdbdb',
+    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -288,8 +289,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
+    paddingTop: 8,
+    paddingHorizontal: 8,
     borderTopColor: '#efefef',
-    paddingRight: 8,
   },
   emojiContainer: {
     width: 24,
