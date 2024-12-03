@@ -85,19 +85,18 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
             </View>
           )}
         </View>
-      </View>
-      
-      <View style={[
-        styles.metaContainer, 
-        isProfileView && styles.profileMetaContainer
-      ]}>
-        <Text style={styles.sparklesEmoji}>✨</Text>
-        <Text style={[
-          styles.meta, 
-          isProfileView && styles.profileMeta
+        <View style={[
+          styles.metaContainer, 
+          isProfileView && styles.profileMetaContainer
         ]}>
-          {formatDistanceToNow(new Date(post.created_at))} ago
-        </Text>
+          <Text style={[
+            styles.meta, 
+            isProfileView && styles.profileMeta
+          ]}>
+            {formatDistanceToNow(new Date(post.created_at))} ago
+          </Text>
+          <Text style={styles.sparklesEmoji}>✨</Text>
+        </View>
       </View>
       
       <View style={styles.contentContainer}>
@@ -240,12 +239,10 @@ const styles = StyleSheet.create({
   metaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    marginBottom: 20,
     gap: 4,
   },
   profileMetaContainer: {
-    marginBottom: 12,
+    marginBottom: 0,
   },
   meta: {
     fontFamily: typography.regular,
@@ -256,7 +253,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#262626',
     fontFamily: typography.medium,
-    marginBottom: 12,
   },
   commentButton: {
     flexDirection: 'row',
@@ -329,6 +325,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingRight: 12,
+    paddingBottom: 18,
   },
   headerContainer: {
     flex: 1,
