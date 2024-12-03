@@ -74,7 +74,7 @@ export default function App() {
           onPress={() => handleNavigation('SavedPosts')}
         >
           <Icon 
-            name="bookmark" 
+            name="favorite" 
             size={28} 
             color={activeRoute === 'SavedPosts' ? "#007AFF" : "#666"} 
           />
