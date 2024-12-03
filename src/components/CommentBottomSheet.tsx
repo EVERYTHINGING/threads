@@ -85,7 +85,7 @@ export function CommentBottomSheet({ postId, bottomSheetRef }: CommentBottomShee
         if (mentionedUser) {
           return (
             <React.Fragment key={index}>
-              <Pressable onPress={() => handleUserPress(mentionedUser.id)}>
+              <Pressable style={styles.mentionContainer} onPress={() => handleUserPress(mentionedUser.id)}>
                 <Text style={styles.mention}>{word}</Text>
               </Pressable>
               {' '}
@@ -243,7 +243,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  mention: {
-    fontWeight: 'bold',
+  mentionContainer: {
+    margin: 0,
+    padding: 0,
+    marginTop: 10,
+    height: 'auto',
+    overflow: 'visible',
   },
+  mention: {
+    // fontWeight: 'bold',
+    color: '#007AFF',
+    fontSize: 20,
+  }
 }); 
