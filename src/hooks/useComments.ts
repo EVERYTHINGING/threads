@@ -50,6 +50,41 @@ export function useComments(postId: number) {
 
       if (error) throw error;
 
+      // Extract mentioned usernames from content
+      const mentions = content.match(/@(\w+)/g) || [];
+      
+      // Create notifications for mentioned users
+      if (mentions.length > 0) {
+        const usernames = mentions.map(mention => mention.slice(1));
+        
+        // Get user IDs for the mentioned usernames
+        const { data: mentionedUsers, error: mentionError } = await supabase
+          .from('users')
+          .select('id')
+          .in('username', usernames);
+
+        if (mentionError) throw mentionError;
+
+        // Create notifications for each mentioned user
+        const notifications = mentionedUsers
+          .filter(user => user.id !== userData.user.id) // Don't notify self
+          .map(user => ({
+            user_id: user.id,
+            actor_id: userData.user.id,
+            post_id: postId,
+            type: 'comment'
+          }));
+
+        if (notifications.length > 0) {
+          const { error: notificationError } = await supabase
+            .from('notifications')
+            .insert(notifications);
+
+          if (notificationError) throw notificationError;
+        }
+      }
+
+      // Create notification for post owner (if different from commenter)
       if (postData.user_id !== userData.user.id) {
         const { error: notificationError } = await supabase
           .from('notifications')
