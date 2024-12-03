@@ -26,7 +26,7 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
   const commentCount = comments?.length || 0;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
-  const isSaved = post.saved_by?.includes(user?.id.toString() || '');
+  const [isSaved, setIsSaved] = useState(post.saved_by?.includes(user?.id.toString() || ''));
   
   const handleSave = async () => {
     try {
@@ -34,6 +34,7 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
         postId: post.id,
         savedBy: post.saved_by || []
       });
+      setIsSaved(true);
     } catch (error) {
       console.error('Failed to save post:', error);
     }
@@ -139,7 +140,10 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
           </View>
         )}
         
-        <View style={styles.imageContainer}>
+        <View style={[
+          styles.imageContainer,
+          (!post.price || !post.user?.venmo_username) && styles.imageContainerNoPrice
+        ]}>
           {post.images && post.images.length > 0 && (
             <>
               <ImageSlider images={post.images.map(image => image.url)} />
@@ -393,5 +397,8 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 16,
     fontFamily: typography.medium,
+  },
+  imageContainerNoPrice: {
+    marginTop: 16,
   },
 }); 
