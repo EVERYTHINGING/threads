@@ -9,6 +9,7 @@ interface UsePostsOptions {
   userId?: number;
   limit?: number;
   sortOrder?: 'desc' | 'asc';
+  showSavedOnly?: boolean;
 }
 
 interface CreatePostData {
@@ -19,7 +20,7 @@ interface CreatePostData {
 }
 
 export function usePosts(options: UsePostsOptions = {}) {
-  const { userId, limit = 5, sortOrder = 'desc' } = options;
+  const { userId, limit = 5, sortOrder = 'desc', showSavedOnly } = options;
   const queryClient = useQueryClient();
 
   const { data: posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -38,6 +39,11 @@ export function usePosts(options: UsePostsOptions = {}) {
       // Add user filter if userId is provided
       if (userId) {
         query = query.eq('user_id', userId);
+      }
+
+      const { data: userData } = await supabase.auth.getUser();
+      if (showSavedOnly && userData.user) {
+        query = query.contains('saved_by', [userData.user.id.toString()]);
       }
 
       const { data, error, count } = await query;

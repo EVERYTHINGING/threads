@@ -12,9 +12,10 @@ interface FeedProps {
   navigation: any;
   userId?: number;
   isProfileView?: boolean;
+  showSavedOnly?: boolean;
 }
 
-export function Feed({ navigation, userId, isProfileView = false }: FeedProps) {
+export function Feed({ navigation, userId, isProfileView = false, showSavedOnly = false }: FeedProps) {
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const { 
     posts, 
@@ -22,7 +23,7 @@ export function Feed({ navigation, userId, isProfileView = false }: FeedProps) {
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage
-  } = usePosts({ userId, sortOrder });
+  } = usePosts({ userId, sortOrder, showSavedOnly });
 
   useEffect(() => {
   }, [sortOrder]);
