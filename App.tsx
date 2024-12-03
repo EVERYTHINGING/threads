@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { UserScreen } from './src/screens/UserScreen';
 import { useAuth } from './src/hooks/useAuth';
 import { PostScreen } from './src/screens/PostScreen';
+import { NotificationButton } from './src/components/NotificationButton';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
@@ -99,27 +100,21 @@ export default function App() {
             <Stack.Screen 
               name="Login" 
               component={LoginScreen}
-              options={{ 
-                headerRight: undefined,
-                headerBackVisible: false 
-              }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen 
               name="Home" 
               component={HomeScreen}
               options={({ navigation }) => ({
                 headerLeft: () => (
-                  <TouchableOpacity 
+                  <NotificationButton 
                     onPress={() => navigation.navigate('Notifications')}
-                    style={styles.headerButtonLeft}
-                  >
-                    <Icon name="notifications" size={22} color="#007AFF" />
-                  </TouchableOpacity>
+                  />
                 ),
                 headerRight: () => (
                   <TouchableOpacity 
-                    onPress={() => navigation.navigate('Profile')}
                     style={styles.headerButtonRight}
+                    onPress={() => navigation.navigate('Profile')}
                   >
                     {user?.avatar_url ? (
                       <Image 

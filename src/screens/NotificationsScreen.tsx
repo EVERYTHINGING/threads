@@ -6,7 +6,7 @@ import { useNotifications } from '../hooks/useNotifications';
 import { Loading } from '../components/Loading';
 
 export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifications'>) {
-  const { notifications, isLoading } = useNotifications();
+  const { notifications, isLoading, markAsRead } = useNotifications();
 
   const renderNotification = ({ item: notification }) => {
     const getNotificationText = () => {
@@ -23,8 +23,14 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
     };
 
     const handlePress = () => {
+      if (!notification.is_read) {
+        console.log('Triggering markAsRead for notification:', notification.id);
+        markAsRead.mutate(notification.id);
+      }
       if (notification.post_id) {
         navigation.navigate('Post', { postId: notification.post_id });
+      } else if (notification.type === 'follow') {
+        navigation.navigate('User', { userId: notification.actor_id });
       }
     };
 
