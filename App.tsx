@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { UserScreen } from './src/screens/UserScreen';
 import { useAuth } from './src/hooks/useAuth';
+import { PostScreen } from './src/screens/PostScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
@@ -160,6 +161,11 @@ export default function App() {
               name="User" 
               component={UserScreen}
               options={{ title: 'User Profile' }}
+            />
+            <Stack.Screen 
+              name="Post" 
+              component={PostScreen}
+              options={{ title: 'Post' }}
             />
           </Stack.Navigator>
           {routeNameRef.current !== 'Login' && <TabBar />}

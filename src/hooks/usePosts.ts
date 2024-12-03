@@ -10,6 +10,7 @@ interface UsePostsOptions {
   limit?: number;
   sortOrder?: 'desc' | 'asc';
   showSavedOnly?: boolean;
+  postId?: number;
 }
 
 interface CreatePostData {
@@ -20,11 +21,11 @@ interface CreatePostData {
 }
 
 export function usePosts(options: UsePostsOptions = {}) {
-  const { userId, limit = 5, sortOrder = 'desc', showSavedOnly } = options;
+  const { userId, limit = 5, sortOrder = 'desc', showSavedOnly, postId } = options;
   const queryClient = useQueryClient();
 
   const { data: posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts', { userId, sortOrder }],
+    queryKey: ['posts', { userId, sortOrder, showSavedOnly, postId }],
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('posts')

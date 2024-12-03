@@ -27,6 +27,14 @@ export function useComments(postId: number) {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Not authenticated');
 
+      const { data: postData, error: postError } = await supabase
+        .from('posts')
+        .select('user_id')
+        .eq('id', postId)
+        .single();
+
+      if (postError) throw postError;
+
       const { data, error } = await supabase
         .from('comments')
         .insert([{ 
@@ -41,6 +49,20 @@ export function useComments(postId: number) {
         .single();
 
       if (error) throw error;
+
+      if (postData.user_id !== userData.user.id) {
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert([{
+            user_id: postData.user_id,
+            actor_id: userData.user.id,
+            post_id: postId,
+            type: 'comment'
+          }]);
+
+        if (notificationError) throw notificationError;
+      }
+
       return data;
     },
     onSuccess: () => {
