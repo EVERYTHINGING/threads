@@ -9,6 +9,7 @@ import { CreatePostScreen } from './src/screens/CreatePostScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { SavedPostsScreen } from './src/screens/SavedPostsScreen';
+import { NotificationsScreen } from './src/screens/NotificationsScreen';
 import { RootStackParamList } from './src/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -106,10 +107,18 @@ export default function App() {
               name="Home" 
               component={HomeScreen}
               options={({ navigation }) => ({
+                headerLeft: () => (
+                  <TouchableOpacity 
+                    onPress={() => navigation.navigate('Notifications')}
+                    style={styles.headerButtonLeft}
+                  >
+                    <Icon name="notifications" size={22} color="#007AFF" />
+                  </TouchableOpacity>
+                ),
                 headerRight: () => (
                   <TouchableOpacity 
                     onPress={() => navigation.navigate('Profile')}
-                    style={styles.headerButton}
+                    style={styles.headerButtonRight}
                   >
                     {user?.avatar_url ? (
                       <Image 
@@ -128,9 +137,25 @@ export default function App() {
                 headerBackVisible: false,
               })}
             />
-            <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'New Post' }} />
-            <Stack.Screen name="SavedPosts" component={SavedPostsScreen} options={{ title: 'Saved Posts' }} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen 
+              name="CreatePost" 
+              component={CreatePostScreen} 
+              options={{ title: 'New Post' }} 
+            />
+            <Stack.Screen 
+              name="SavedPosts" 
+              component={SavedPostsScreen} 
+              options={{ title: 'Saved Posts' }} 
+            />
+            <Stack.Screen 
+              name="Notifications" 
+              component={NotificationsScreen} 
+              options={{ title: 'Notifications' }} 
+            />
+            <Stack.Screen 
+              name="Profile" 
+              component={ProfileScreen} 
+            />
             <Stack.Screen 
               name="User" 
               component={UserScreen}
@@ -146,9 +171,11 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  headerButton: {
-    marginHorizontal: 8,
-    padding: 4,
+  headerButtonLeft: {
+    marginLeft: 8,
+  },
+  headerButtonRight: {
+    marginRight: 8,
   },
   avatar: {
     width: 32,
