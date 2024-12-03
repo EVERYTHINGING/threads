@@ -95,7 +95,7 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
           ]}>
             {formatDistanceToNow(new Date(post.created_at))} ago
           </Text>
-          <Text style={styles.sparklesEmoji}>✨</Text>
+          {!isProfileView && <Text style={styles.sparklesEmoji}>✨</Text>}
         </View>
       </View>
       
@@ -240,9 +240,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    justifyContent: 'flex-end',
   },
   profileMetaContainer: {
+    justifyContent: 'flex-start',
     marginBottom: 0,
+    paddingHorizontal: 12,
   },
   meta: {
     fontFamily: typography.regular,

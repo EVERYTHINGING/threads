@@ -36,7 +36,10 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
 
     return (
       <TouchableOpacity 
-        style={styles.notificationItem}
+        style={[
+          styles.notificationItem,
+          notification.is_read && styles.readNotification
+        ]}
         onPress={handlePress}
       >
         {notification.actor.avatar_url ? (
@@ -163,5 +166,8 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flexGrow: 1,
+  },
+  readNotification: {
+    opacity: 0.5,
   },
 }); 
