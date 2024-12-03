@@ -30,13 +30,21 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
   
   const handleSave = async () => {
     try {
-      await savePost.mutateAsync({
-        postId: post.id,
-        savedBy: post.saved_by || []
-      });
-      setIsSaved(true);
+      if (!isSaved) {
+        await savePost.mutateAsync({
+          postId: post.id,
+          savedBy: (post.saved_by || []).filter(id => id !== user?.id.toString())
+        });
+        setIsSaved(true);
+      } else {
+        await savePost.mutateAsync({
+          postId: post.id,
+          savedBy: post.saved_by || []
+        });
+        setIsSaved(false);
+      }
     } catch (error) {
-      console.error('Failed to save post:', error);
+      console.error('Failed to save/unsave post:', error);
     }
   };
 
