@@ -72,6 +72,22 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
 
   return (
     <View style={[styles.container, isProfileView && styles.profileContainer]}>
+      {isAdmin && (
+      <TouchableOpacity 
+        style={styles.approveButton}
+        onPress={handleApprove}
+      >
+        {post.is_approved ?
+        <Text style={[styles.approveButtonText, {backgroundColor: 'lightgreen'}]}>
+          Approved ✅
+        </Text>
+        :
+        <Text style={[styles.approveButtonText]}>
+          Approve
+        </Text>
+        }
+      </TouchableOpacity>
+      )}
       <View style={styles.topContainer}>
         <View style={styles.headerContainer}>
           {!isProfileView && (
@@ -197,19 +213,6 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
           </Text>
         </TouchableOpacity>
       </View>
-
-      {isAdmin && (
-      <TouchableOpacity 
-        style={styles.approveButton}
-        onPress={handleApprove}
-      >
-        <Text style={styles.approveButtonText}>
-          {post.is_approved ? 'Unapprove' : 'Approve'}
-        </Text>
-      </TouchableOpacity>
-      )}
-
-
     </View>
   );
 }
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#dbdbdb',
-    marginBottom: 20,
+    marginBottom: 40,
   },
   header: {
     flexDirection: 'row',
@@ -306,9 +309,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   approveButton: {
+    position: 'absolute',
+    right: 0,
+    top: -20,
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   approveButtonText: {
     width: 'auto',
