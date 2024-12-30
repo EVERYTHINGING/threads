@@ -1,12 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  Animated 
-} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Linking } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { Post } from '../types';
@@ -18,7 +11,6 @@ import { typography } from '../theme/typography';
 import { usePosts } from '../hooks/usePosts';
 import { useAuth } from '../hooks/useAuth';
 import ImageSlider from './ImageSlider';
-import * as Clipboard from 'expo-clipboard';
 
 interface PostCardProps {
   post: Post;
@@ -33,13 +25,9 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
   const { user } = useAuth();
   const commentCount = comments?.length || 0;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  
   const [isSaved, setIsSaved] = useState(post.saved_by?.includes(user?.id.toString() || ''));
   
-  // Animated values for tooltip
-  const tooltipOpacity = useRef(new Animated.Value(0)).current;
-  const tooltipTranslateY = useRef(new Animated.Value(0)).current;
-
   const handleSave = async () => {
     try {
       if (!isSaved) {
@@ -61,38 +49,11 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
   };
 
   const handleVenmoPress = () => {
-    if (!post.user?.venmo_username) return;
-    Clipboard.setString(post.user.venmo_username);
+    if (!post.user?.venmo_username || !post.price) return;
     
-    // Start animation
-    Animated.parallel([
-      Animated.timing(tooltipOpacity, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(tooltipTranslateY, {
-        toValue: -10,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // After a delay, fade out and slide down
-      setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(tooltipOpacity, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(tooltipTranslateY, {
-            toValue: 10,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }, 1500);
-    });
+    const venmoUrl = `https://venmo.com/${post.user.venmo_username}?txn=pay&amount=${post.price}&note=${encodeURIComponent(post.title || '')}`;
+    console.log('Venmo URL:', venmoUrl);
+    Linking.openURL(venmoUrl);
   };
 
   const shouldTruncate = post.content.length > 200;
@@ -176,19 +137,6 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
               onPress={handleVenmoPress}
               style={styles.venmoButton}
             >
-              {/* Animated Tooltip */}
-              <Animated.View 
-                style={[
-                  styles.tooltip, 
-                  {
-                    opacity: tooltipOpacity,
-                    transform: [{ translateY: tooltipTranslateY }],
-                  }
-                ]}
-              >
-                <Text style={styles.tooltipText}>Copied!</Text>
-              </Animated.View>
-              
               <View style={styles.priceWrapper}>
                 <Text style={styles.dollarSign}>$</Text>
                 <Text style={styles.priceText}>{post.price}</Text>
@@ -438,11 +386,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 0,
     borderColor: '#ddd',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
+    boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.2)',
   },
   venmoContainer: {
     flexDirection: 'row',
@@ -464,21 +408,5 @@ const styles = StyleSheet.create({
   },
   imageContainerNoPrice: {
     marginTop: 16,
-  },
-  tooltip: {
-    position: 'absolute',
-    top: -40,
-    left: '50%',
-    transform: [{ translateX: -40 }],
-    backgroundColor: '#333',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    zIndex: 10,
-  },
-  tooltipText: {
-    color: 'white',
-    fontSize: 12,
-    textAlign: 'center',
   },
 }); 
