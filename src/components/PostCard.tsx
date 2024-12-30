@@ -21,8 +21,9 @@ interface PostCardProps {
 export function PostCard({ post, onCommentPress, isProfileView = false }: PostCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { comments } = useComments(post.id);
-  const { savePost } = usePosts();
+  const { savePost, toggleApproval } = usePosts();
   const { user } = useAuth();
+  const isAdmin = user?.is_admin || false;
   const commentCount = comments?.length || 0;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
@@ -54,6 +55,14 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
     const venmoUrl = `https://venmo.com/${post.user.venmo_username}?txn=pay&amount=${post.price}&note=${encodeURIComponent(post.title || '')}`;
     console.log('Venmo URL:', venmoUrl);
     Linking.openURL(venmoUrl);
+  };
+
+  const handleApprove = async () => {
+    try {
+      await toggleApproval.mutateAsync(post);
+    } catch (error) {
+      console.error('Failed to toggle approval:', error);
+    }
   };
 
   const shouldTruncate = post.content.length > 200;
@@ -106,7 +115,6 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
             <Text style={styles.sparklesEmoji}>✨</Text>
           </View>
         </View>
-       
       </View>
       
       <View style={styles.contentContainer}>
@@ -189,6 +197,19 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
           </Text>
         </TouchableOpacity>
       </View>
+
+      {isAdmin && (
+      <TouchableOpacity 
+        style={styles.approveButton}
+        onPress={handleApprove}
+      >
+        <Text style={styles.approveButtonText}>
+          {post.is_approved ? 'Unapprove' : 'Approve'}
+        </Text>
+      </TouchableOpacity>
+      )}
+
+
     </View>
   );
 }
@@ -234,12 +255,6 @@ const styles = StyleSheet.create({
     color: '#262626',
     letterSpacing: 0.5,
   },
-  title: {
-    fontFamily: typography.medium,
-    fontSize: 14,
-    marginBottom: 4,
-    paddingHorizontal: 12,
-  },
   content: {
     fontFamily: typography.regular,
     fontSize: 18,
@@ -260,14 +275,12 @@ const styles = StyleSheet.create({
     color: '#8e8e8e',
   },
   profileMeta: {
-    
+    // Customize if needed
   },
   commentButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#efefef',
   },
   commentButtonText: {
     fontFamily: typography.medium,
@@ -292,14 +305,27 @@ const styles = StyleSheet.create({
     color: '#8e8e8e',
     fontSize: 16,
   },
+  approveButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  approveButtonText: {
+    width: 'auto',
+    color: '#000',
+    fontFamily: typography.medium,
+    fontSize: 16,
+    backgroundColor: '#FFD700',
+    padding: 8,
+    borderRadius: 4,
+    marginRight: 8,
+  },
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
+    width: '100%',
     paddingTop: 8,
     paddingHorizontal: 8,
-    borderTopColor: '#efefef',
   },
   emojiContainer: {
     width: 24,

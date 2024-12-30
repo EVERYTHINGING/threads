@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import type { Post } from '../types';
+import type { Post, User } from '../types';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { Buffer } from 'buffer';
+import { useAuth } from './useAuth';
 
 interface UsePostsOptions {
   userId?: number;
@@ -21,11 +22,21 @@ interface CreatePostData {
 }
 
 export function usePosts(options: UsePostsOptions = {}) {
-  const { userId, limit = 5, sortOrder = 'desc', showSavedOnly, postId } = options;
+  const { 
+    userId, 
+    limit = 5, 
+    sortOrder = 'desc', 
+    showSavedOnly, 
+    postId 
+  } = options;
+  
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  const isAdmin = user?.is_admin || false;
+
   const { data: posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['posts', { userId, sortOrder, showSavedOnly, postId }],
+    queryKey: ['posts', { userId, sortOrder, showSavedOnly, postId, isAdmin }],
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('posts')
@@ -37,14 +48,16 @@ export function usePosts(options: UsePostsOptions = {}) {
         .order('created_at', { ascending: sortOrder === 'asc' })
         .range(pageParam, pageParam + limit - 1);
 
-      // Add user filter if userId is provided
       if (userId) {
         query = query.eq('user_id', userId);
       }
 
-      const { data: userData } = await supabase.auth.getUser();
-      if (showSavedOnly && userData.user) {
-        query = query.contains('saved_by', [userData.user.id.toString()]);
+      if (!isAdmin) {
+        query = query.eq('is_approved', true);
+      }
+
+      if (showSavedOnly && user) {
+        query = query.contains('saved_by', [user.id.toString()]);
       }
 
       const { data, error, count } = await query;
@@ -133,7 +146,7 @@ export function usePosts(options: UsePostsOptions = {}) {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Not authenticated');
 
-      // Create post
+      // Create post; is_approved defaults to false
       const { data: post, error: postError } = await supabase
         .from('posts')
         .insert([{ 
@@ -167,7 +180,57 @@ export function usePosts(options: UsePostsOptions = {}) {
         if (imagesError) throw imagesError;
       }
 
+      // If post is not approved, send notifications to admins
+      if (!post.is_approved) {
+        const { data: admins, error: adminError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('is_admin', true);
+
+        if (adminError) {
+          console.error('Error fetching admins:', adminError);
+          // Optionally, handle error or throw
+        } else if (admins && admins.length > 0) {
+          const notifications = admins.map(admin => ({
+            user_id: admin.id,
+            actor_id: userData.user.id,
+            post_id: post.id,
+            type: 'post_pending'
+          }));
+
+          const { error: notificationError } = await supabase
+            .from('notifications')
+            .insert(notifications);
+
+          if (notificationError) {
+            console.error('Error inserting notifications:', notificationError);
+            // Optionally, handle error or throw
+          }
+        }
+      }
+
       return post;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+  });
+
+  const toggleApproval = useMutation({
+    mutationFn: async (post: Post) => {
+      const newApprovalStatus = !post.is_approved;
+
+      const { data, error } = await supabase
+        .from('posts')
+        .update({ is_approved: newApprovalStatus })
+        .eq('id', post.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Optionally, notify the post owner about approval status change.
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
@@ -226,7 +289,8 @@ export function usePosts(options: UsePostsOptions = {}) {
     hasNextPage,
     isFetchingNextPage,
     createPost,
-    pickImages,
     savePost,
+    pickImages,
+    toggleApproval,
   };
 }

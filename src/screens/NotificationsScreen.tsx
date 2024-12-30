@@ -1,14 +1,28 @@
 import React from 'react';
-import { StyleSheet, View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { FlatList } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
-import type { RootStackScreenProps } from '../types';
-import { useNotifications } from '../hooks/useNotifications';
 import { Loading } from '../components/Loading';
+import { useNotifications } from '../hooks/useNotifications';
+import type { Notification } from '../hooks/useNotifications';
+import { RootStackScreenProps } from '../types';
+import { typography } from '../theme/typography';
 
 export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifications'>) {
   const { notifications, isLoading, markAsRead } = useNotifications();
 
-  const renderNotification = ({ item: notification }) => {
+  const handleApprovePress = (notification: Notification) => {
+    if (notification.post_id) {
+      // Navigate to Post to approve
+      navigation.navigate('Post', { postId: parseInt(notification.post_id) });
+      // Optionally mark as read
+      if (!notification.is_read) {
+        markAsRead.mutate(notification.id);
+      }
+    }
+  };
+
+  const renderNotification = ({ item: notification }: { item: Notification }) => {
     const getNotificationText = () => {
       switch (notification.type) {
         case 'like':
@@ -17,6 +31,8 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
           return 'commented on your post';
         case 'follow':
           return 'started following you';
+        case 'post_pending':
+          return 'A new post is pending approval';
         default:
           return '';
       }
@@ -27,10 +43,12 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
         console.log('Triggering markAsRead for notification:', notification.id);
         markAsRead.mutate(notification.id);
       }
-      if (notification.post_id) {
-        navigation.navigate('Post', { postId: notification.post_id });
+      if (notification.post_id && notification.type === 'post_pending') {
+        handleApprovePress(notification);
+      } else if (notification.post_id) {
+        navigation.navigate('Post', { postId: parseInt(notification.post_id) });
       } else if (notification.type === 'follow') {
-        navigation.navigate('User', { userId: notification.actor_id });
+        navigation.navigate('User', { userId: parseInt(notification.actor_id) });
       }
     };
 
@@ -62,6 +80,14 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
           <Text style={styles.timestamp}>
             {formatDistanceToNow(new Date(notification.created_at))} ago
           </Text>
+          {notification.type === 'post_pending' && (
+            <TouchableOpacity 
+              style={styles.approveButton}
+              onPress={() => handleApprovePress(notification)}
+            >
+              <Text style={styles.approveButtonText}>Approve</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -80,7 +106,7 @@ export function NotificationsScreen({ navigation }: RootStackScreenProps<'Notifi
       <FlatList
         data={notifications}
         renderItem={renderNotification}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={() => (
           <View style={styles.emptyContainer}>
@@ -103,7 +129,7 @@ const styles = StyleSheet.create({
   },
   notificationItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -148,6 +174,22 @@ const styles = StyleSheet.create({
     color: '#8e8e8e',
     marginTop: 2,
   },
+  approveButton: {
+    marginTop: 8,
+    backgroundColor: '#007AFF',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+  },
+  approveButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: typography.medium,
+  },
+  readNotification: {
+    opacity: 0.5,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -166,8 +208,5 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flexGrow: 1,
-  },
-  readNotification: {
-    opacity: 0.5,
   },
 }); 

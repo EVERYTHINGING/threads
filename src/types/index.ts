@@ -5,6 +5,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  is_admin: boolean;
   is_approved_seller: boolean;
   avatar_url?: string;
   venmo_username?: string;
@@ -25,6 +26,7 @@ export interface Post {
   created_at: string;
   saved_by?: string[];
   price: number;
+  is_approved: boolean;
   user?: User;
   images?: { url: string }[];
 }
