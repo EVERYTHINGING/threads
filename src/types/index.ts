@@ -9,6 +9,7 @@ export interface User {
   is_approved_seller: boolean;
   avatar_url?: string;
   venmo_username?: string;
+  paypal_username?: string;
 }
 
 export interface PostImage {
@@ -48,7 +49,7 @@ export type RootStackParamList = {
   User: { userId: number };
   SavedPosts: undefined;
   Notifications: undefined;
-  Post: { postId: number }; // Add this line
+  Post: { postId: number };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;

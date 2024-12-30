@@ -11,8 +11,9 @@ import * as FileSystem from 'expo-file-system';
 export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
   const { user, loading, signOut } = useAuth();
   const [venmoUsername, setVenmoUsername] = useState(user?.venmo_username || '');
+  const [paypalUsername, setPaypalUsername] = useState(user?.paypal_username || '');
   const [isSaving, setIsSaving] = useState(false);
-  const hasChanges = venmoUsername !== user?.venmo_username;
+  const hasChanges = venmoUsername !== user?.venmo_username || paypalUsername !== user?.paypal_username;
 
   const handlePickAvatar = async () => {
     try {
@@ -102,13 +103,16 @@ export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
     try {
       const { error } = await supabase
         .from('users')
-        .update({ venmo_username: venmoUsername })
+        .update({ 
+          venmo_username: venmoUsername,
+          paypal_username: paypalUsername
+        })
         .eq('id', user.id);
 
       if (error) throw error;
-      Alert.alert('Success', 'Venmo username updated successfully');
+      Alert.alert('Success', 'Your information has been updated successfully');
     } catch (error) {
-      Alert.alert('Error', 'Failed to update Venmo username');
+      Alert.alert('Error', 'Failed to update your information');
     } finally {
       setIsSaving(false);
     }
@@ -157,6 +161,17 @@ export function ProfileScreen({ navigation }: RootStackScreenProps<'Profile'>) {
             value={venmoUsername}
             onChangeText={setVenmoUsername}
             placeholder="Enter your Venmo username"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.paypalContainer}>
+          <Text style={styles.paypalLabel}>PayPal Username:</Text>
+          <TextInput
+            style={styles.paypalInput}
+            value={paypalUsername}
+            onChangeText={setPaypalUsername}
+            placeholder="Enter your PayPal username"
             autoCapitalize="none"
           />
         </View>
@@ -239,11 +254,24 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 4,
   },
-  venmoText: {
-    fontSize: 16,
-    color: '#262626',
-  },
   venmoInput: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  paypalContainer: {
+    marginTop: 16,
+  },
+  paypalLabel: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 4,
+  },
+  paypalInput: {
     height: 40,
     borderWidth: 1,
     borderColor: '#ddd',

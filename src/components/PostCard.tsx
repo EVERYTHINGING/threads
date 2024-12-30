@@ -57,6 +57,14 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
     Linking.openURL(venmoUrl);
   };
 
+  const handlePaypalPress = () => {
+    if (!post.user?.paypal_username || !post.price) return;
+
+    const paypalUrl = `https://www.paypal.com/paypalme/${post.user.paypal_username}/${post.price}`;
+    console.log('PayPal URL:', paypalUrl);
+    Linking.openURL(paypalUrl);
+  };
+
   const handleApprove = async () => {
     try {
       await toggleApproval.mutateAsync(post);
@@ -155,21 +163,38 @@ export function PostCard({ post, onCommentPress, isProfileView = false }: PostCa
           </TouchableOpacity>
         )}
 
-        {post.price && post.user?.venmo_username && (
-          <View style={styles.venmoContainer}>
-            <TouchableOpacity 
-              onPress={handleVenmoPress}
-              style={styles.venmoButton}
-            >
-              <View style={styles.priceWrapper}>
+        {post.price && (
+          <View style={styles.paymentContainer}>
+            <View style={styles.priceWrapper}>
                 <Text style={styles.dollarSign}>$</Text>
                 <Text style={styles.priceText}>{post.price}</Text>
-                <Image 
-                  source={require('../../assets/venmo.png')} 
-                  style={styles.venmoLogo}
-                />
-              </View>
+            </View>
+
+            {post.user?.venmo_username && (
+            <TouchableOpacity 
+              onPress={handleVenmoPress}
+              style={styles.paymentButton}
+            >
+              <Image 
+                source={require('../../assets/venmo.png')} 
+                style={styles.paymentLogo}
+              />
             </TouchableOpacity>
+            )}
+
+            {post.user?.paypal_username && (
+            <TouchableOpacity 
+              onPress={handlePaypalPress}
+              style={styles.paymentButton}
+            >
+              <Image 
+                source={require('../../assets/paypal.png')} 
+                style={styles.paymentLogo}
+              />
+            </TouchableOpacity>
+            )}
+
+
           </View>
         )}
         
@@ -386,6 +411,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 8,
   },
   dollarSign: {
     fontSize: 14,
@@ -411,26 +437,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'relative',
   },
-  venmoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    justifyContent: 'space-between',
-    borderWidth: 0,
-    borderColor: '#ddd',
-    boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.2)',
-  },
-  venmoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 12,
-    marginTop: 12,
-  },
   truncatedContent: {
     maxHeight: 200,
   },
@@ -445,5 +451,32 @@ const styles = StyleSheet.create({
   },
   imageContainerNoPrice: {
     marginTop: 16,
+  },
+  paymentContainer: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    justifyContent: 'flex-end',
+    borderWidth: 0,
+    borderColor: '#ddd',
+    boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.2)',
+    marginRight: 8,
+  },
+  paymentButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingLeft: 8,
+  },
+  paymentLogo: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
 }); 
